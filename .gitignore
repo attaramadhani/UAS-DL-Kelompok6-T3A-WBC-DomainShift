@@ -1,0 +1,24 @@
+# Dataset mentah dan arsip (dilarang disebar ulang ke GitHub - Kisi-Kisi 6.3)
+data/
+*.rar
+*.zip
+*.tar.gz
+
+# Model checkpoints & cache berat
+*.pth
+*.pt
+*.ckpt
+*.onnx
+*.pkl
+checkpoints/
+weights/
+
+# Python / Jupyter / OS
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+.env
+.venv/
+venv/

@@ -1,0 +1,128 @@
+{
+  "dataset": "Zheng et al. (2018) WBC Segmentation (DOI: 10.17632/w7cvnmn4c5.1)",
+  "split_seed": 42,
+  "split_files": {
+    "D1": "splits/zheng_d1_split.csv",
+    "D2": "splits/zheng_d2_split.csv"
+  },
+  "leakage_check": {
+    "total_images": 400,
+    "split_counts": {
+      "D1": {
+        "train": 210,
+        "val": 45,
+        "test": 45
+      },
+      "D2": {
+        "train": 70,
+        "val": 15,
+        "test": 15
+      }
+    },
+    "cross_split_leakage_exact": 0,
+    "cross_split_leakage_dhash_le_4bits": 0,
+    "cross_domain_near_duplicates_le_4bits": 0,
+    "within_train_exact_duplicates_grouped": [
+      [
+        "D1/112(train)",
+        "D1/139(train)"
+      ]
+    ]
+  },
+  "domain_1_eda": {
+    "domain": "D1",
+    "count": 300,
+    "unique_dimensions_count": 30,
+    "dimensions_summary": {
+      "120x120": 224,
+      "112x116": 12,
+      "116x120": 10,
+      "120x116": 9,
+      "116x116": 8,
+      "120x112": 4,
+      "108x112": 3,
+      "104x108": 3
+    },
+    "stray_mask_pixel_files": {},
+    "class_pixel_pct_mean_std": {
+      "background": [
+        68.73,
+        8.25
+      ],
+      "cytoplasm": [
+        18.81,
+        6.89
+      ],
+      "nucleus": [
+        12.46,
+        3.97
+      ]
+    },
+    "rgb_channel_mean": [
+      223.76,
+      198.81,
+      165.68
+    ],
+    "rgb_channel_std": [
+      50.29,
+      75.29,
+      32.76
+    ]
+  },
+  "domain_2_eda": {
+    "domain": "D2",
+    "count": 100,
+    "unique_dimensions_count": 1,
+    "dimensions_summary": {
+      "300x300": 100
+    },
+    "stray_mask_pixel_files": {
+      "034.png": {
+        "2": 2,
+        "7": 38,
+        "25": 52,
+        "42": 1,
+        "44": 3,
+        "45": 1
+      },
+      "035.png": {
+        "3": 3
+      },
+      "047.png": {
+        "7": 179
+      },
+      "050.png": {
+        "9": 22
+      },
+      "076.png": {
+        "24": 1,
+        "37": 1,
+        "50": 1
+      }
+    },
+    "class_pixel_pct_mean_std": {
+      "background": [
+        77.24,
+        8.24
+      ],
+      "cytoplasm": [
+        12.65,
+        6.34
+      ],
+      "nucleus": [
+        10.1,
+        3.77
+      ]
+    },
+    "rgb_channel_mean": [
+      210.52,
+      171.04,
+      174.68
+    ],
+    "rgb_channel_std": [
+      45.22,
+      55.31,
+      23.19
+    ]
+  }
+}

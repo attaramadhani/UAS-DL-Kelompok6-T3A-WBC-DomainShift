@@ -1,0 +1,61 @@
+project:
+  name: "UAS Deep Learning for Image - Computer Vision Lanjutan (T3-A)"
+  topic_code: "T3-A"
+  topic_title: "Augmentasi warna vs stain normalization lintas domain"
+  group: "Kelompok 6"
+  class: "Deep Learning A"
+  lecturer: "Dr. Wahyudi Setiawan, S.Kom., M.Kom."
+  members:
+    - name: "Attala Alif Ramadhani Tri Hida"
+      nim: "230441100144"
+      role: "Ketua tim, Model 1 (U-Net), laporan"
+      ablation_owner: "Pra-pemrosesan warna (Baseline vs ColorJitter vs Macenko vs Reinhard)"
+    - name: "Nafaul Hernanda Romadlona"
+      nim: "240441100125"
+      role: "Pengolahan data & EDA, pembagian data, uji kebocoran"
+      ablation_owner: "Fungsi loss (Cross-Entropy vs Dice Loss vs CE+Dice)"
+    - name: "M. Rafly Kurniawan"
+      nim: "240441100086"
+      role: "Model 2 (DeepLabV3+), pelatihan multi-seed"
+      ablation_owner: "Resolusi input & augmentasi geometrik (128x128 vs 256x256)"
+    - name: "Naufal Husain"
+      nim: "240441100038"
+      role: "Evaluasi metrik per citra, analisis error, Grad-CAM, efisiensi"
+      ablation_owner: "Pilihan encoder & fine-tuning (ResNet-34 vs MobileNetV2)"
+
+dataset:
+  source_name: "WBC Segmentation Dataset (Zheng et al., 2018)"
+  mendeley_doi: "10.17632/w7cvnmn4c5.1"
+  mendeley_url: "https://data.mendeley.com/datasets/w7cvnmn4c5/1"
+  domain_1_url: "https://data.mendeley.com/public-files/datasets/w7cvnmn4c5/files/77a30a73-7409-4d61-b55a-aea667a11142/file_downloaded"
+  domain_2_url: "https://data.mendeley.com/public-files/datasets/w7cvnmn4c5/files/543b0d57-cd1b-4316-8fb5-69ad28b8e767/file_downloaded"
+  classes:
+    0: "Background (termasuk RBC)"
+    1: "Cytoplasm (Sitoplasma)"
+    2: "Nucleus (Nukleus)"
+
+training:
+  fixed_split_seed: 42
+  main_comparison_seeds: [42, 123, 999]
+  input_size: 256
+  batch_size: 16
+  epochs: 40
+  optimizer: "AdamW"
+  learning_rate: 0.0003
+  weight_decay: 0.0001
+  models:
+    - name: "UNet_ResNet34"
+      paradigm: "Encoder-Decoder"
+      encoder: "resnet34"
+      weights: "imagenet"
+    - name: "DeepLabV3Plus_ResNet34"
+      paradigm: "Atrous Spatial Pyramid Pooling (ASPP)"
+      encoder: "resnet34"
+      weights: "imagenet"
+
+evaluation:
+  metrics_per_image: ["dice_nucleus", "dice_cytoplasm", "iou_nucleus", "iou_cytoplasm", "miou", "hd95_nucleus", "hd95_cytoplasm"]
+  efficiency:
+    warmup_runs: 10
+    benchmark_images: 50
+    batch_size: 1
