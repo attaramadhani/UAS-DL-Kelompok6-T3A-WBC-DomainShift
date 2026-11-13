@@ -37,7 +37,13 @@ def get_train_transforms(aug_mode: str = "geom") -> Optional[A.Compose]:
 
 
 @torch.no_grad()
-def evaluate_loader(model, loader: DataLoader, device: str = "cuda", capture_records: bool = False):
+def evaluate_loader(
+    model,
+    loader: DataLoader,
+    device: str = "cuda",
+    capture_records: bool = False,
+    compute_hd95: bool = True,
+):
     """Evaluasi model pada satu DataLoader dan hitung metrik wajib per citra."""
     model.eval()
     per_image = []
@@ -52,7 +58,7 @@ def evaluate_loader(model, loader: DataLoader, device: str = "cuda", capture_rec
         gts = masks.numpy()
 
         for idx in range(len(preds)):
-            m = evaluate_single_image(preds[idx], gts[idx])
+            m = evaluate_single_image(preds[idx], gts[idx], compute_hd95=compute_hd95)
             per_image.append(m)
             if capture_records:
                 rgb_vis = np.clip(imgs[idx].cpu().numpy().transpose(1, 2, 0) * std + mean, 0.0, 1.0)
@@ -115,6 +121,8 @@ def run_experiment(
     log_csv_path: str = "logs/experiment_runs.csv",
     save_weights_path: Optional[str] = None,
     device: str = "cuda",
+    strategy: str = "",
+    capture_test_records: bool = True,
 ) -> Dict[str, object]:
     """Jalankan satu eksperimen penuh: train -> val model selection -> evaluate in-domain & cross-domain."""
     t_start = time.perf_counter()
@@ -153,10 +161,18 @@ def run_experiment(
         normalizer=eval_normalizer,
     )
 
-    train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=2, pin_memory=device.startswith("cuda"))
-    val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False, num_workers=2)
-    in_test_loader = DataLoader(in_test_ds, batch_size=batch_size, shuffle=False, num_workers=2)
-    cross_test_loader = DataLoader(cross_test_ds, batch_size=batch_size, shuffle=False, num_workers=2)
+    drop_last_train = len(train_ds) > batch_size and (len(train_ds) % batch_size == 1)
+    train_loader = DataLoader(
+        train_ds,
+        batch_size=batch_size,
+        shuffle=True,
+        num_workers=0,
+        drop_last=drop_last_train,
+        pin_memory=device.startswith("cuda"),
+    )
+    val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False, num_workers=0)
+    in_test_loader = DataLoader(in_test_ds, batch_size=batch_size, shuffle=False, num_workers=0)
+    cross_test_loader = DataLoader(cross_test_ds, batch_size=batch_size, shuffle=False, num_workers=0)
 
     model = build_segmentation_model(
         arch=arch,
@@ -188,7 +204,9 @@ def run_experiment(
                 running_loss += float(loss.item()) * len(imgs)
             scheduler.step()
 
-            val_summary, _ = evaluate_loader(model, val_loader, device=device, capture_records=False)
+            val_summary, _ = evaluate_loader(
+                model, val_loader, device=device, capture_records=False, compute_hd95=False
+            )
             val_dice = val_summary["dice_fg_mean"]["mean"]
             history["train_loss"].append(running_loss / len(train_ds))
             history["val_dice_fg"].append(val_dice)
@@ -203,18 +221,23 @@ def run_experiment(
             os.makedirs(os.path.dirname(save_weights_path), exist_ok=True)
             torch.save(best_state, save_weights_path)
 
-        in_summary, in_records = evaluate_loader(model, in_test_loader, device=device, capture_records=True)
-        cross_summary, cross_records = evaluate_loader(model, cross_test_loader, device=device, capture_records=True)
+        in_summary, in_records = evaluate_loader(model, in_test_loader, device=device, capture_records=capture_test_records)
+        cross_summary, cross_records = evaluate_loader(model, cross_test_loader, device=device, capture_records=capture_test_records)
         eff = benchmark_efficiency(model, input_size=input_size, warmup=10, n_iters=50, device=device)
     except Exception as exc:
         status = f"failed: {exc}"
         in_summary = cross_summary = eff = {}
         in_records = cross_records = []
 
+    model.cpu()
+    if device.startswith("cuda") and torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
     elapsed_sec = round(time.perf_counter() - t_start, 2)
     row = {
         "run_name": run_name,
         "owner": owner,
+        "strategy": strategy or aug_mode,
         "train_domain": train_domain,
         "target_domain": target_domain,
         "arch": arch,

@@ -48,13 +48,13 @@ def _binary_hd95(pred_mask: np.ndarray, gt_mask: np.ndarray) -> float:
     return float(np.percentile(all_dists, 95))
 
 
-def evaluate_single_image(pred: np.ndarray, gt: np.ndarray) -> Dict[str, float]:
+def evaluate_single_image(pred: np.ndarray, gt: np.ndarray, compute_hd95: bool = True) -> Dict[str, float]:
     """Hitung seluruh metrik wajib untuk satu citra (0=bg, 1=sitoplasma, 2=nukleus)."""
     dice_cyto, iou_cyto = _binary_dice_iou(pred == 1, gt == 1)
     dice_nuc, iou_nuc = _binary_dice_iou(pred == 2, gt == 2)
     _, iou_bg = _binary_dice_iou(pred == 0, gt == 0)
 
-    return {
+    metrics = {
         "dice_cytoplasm": dice_cyto,
         "dice_nucleus": dice_nuc,
         "dice_fg_mean": 0.5 * (dice_cyto + dice_nuc),
@@ -62,9 +62,11 @@ def evaluate_single_image(pred: np.ndarray, gt: np.ndarray) -> Dict[str, float]:
         "iou_nucleus": iou_nuc,
         "miou_fg": 0.5 * (iou_cyto + iou_nuc),
         "miou_all": (iou_bg + iou_cyto + iou_nuc) / 3.0,
-        "hd95_cytoplasm": _binary_hd95(pred == 1, gt == 1),
-        "hd95_nucleus": _binary_hd95(pred == 2, gt == 2),
     }
+    if compute_hd95:
+        metrics["hd95_cytoplasm"] = _binary_hd95(pred == 1, gt == 1)
+        metrics["hd95_nucleus"] = _binary_hd95(pred == 2, gt == 2)
+    return metrics
 
 
 def aggregate_per_image_metrics(per_image_rows: List[Dict[str, float]]) -> Dict[str, Dict[str, float]]:

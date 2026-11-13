@@ -5,24 +5,30 @@ import numpy as np
 from PIL import Image
 
 
-def _rgb_to_od(img: np.ndarray, io_intensity: float = 255.0) -> np.ndarray:
-    """Konversi citra RGB uint8 menjadi Optical Density (OD)."""
+def _estimate_background_rgb(img: np.ndarray, bg_percentile: float = 95.0) -> np.ndarray:
+    """Estimasi titik putih illuminant latar per kanal RGB untuk Beer-Lambert adaptif domain."""
+    return np.clip(np.percentile(img.astype(np.float32), bg_percentile, axis=(0, 1)), 40.0, 255.0)
+
+
+def _rgb_to_od(img: np.ndarray, io_intensity: float | np.ndarray = 255.0) -> np.ndarray:
+    """Konversi citra RGB uint8 menjadi Optical Density (OD) terhadap illuminant referensi."""
     arr = np.maximum(img.astype(np.float32), 1.0)
-    return np.maximum(-np.log(arr / io_intensity), 0.0)
+    io = np.asarray(io_intensity, dtype=np.float32)
+    if io.ndim == 1:
+        io = io[None, None, :]
+    return np.maximum(-np.log(arr / io), 0.0)
 
 
 def _extract_macenko_stain_matrix(
     img: np.ndarray,
-    io_intensity: float = 255.0,
-    beta: float = 0.15,
+    io_intensity: float | np.ndarray = 255.0,
+    beta: float = 0.12,
     alpha: float = 1.0,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Ekstraksi matriks vektor pewarna (3x2) dan konsentrasi maksimal persentil ke-99."""
     od = _rgb_to_od(img, io_intensity).reshape((-1, 3))
-    # Abaikan piksel latar terang hampir putih (OD rendah)
-    od_hat = od[np.all(od >= beta, axis=1)]
-    if len(od_hat) < 16:
-        od_hat = od[np.linalg.norm(od, axis=1) >= beta]
+    # Pilih piksel ber-OD cukup tinggi (nukleus/sitoplasma/RBC) di atas latar yang sudah dinormalisasi
+    od_hat = od[np.linalg.norm(od, axis=1) >= beta]
 
     if len(od_hat) < 16:
         he_default = np.array([[0.65, 0.07], [0.70, 0.99], [0.29, 0.11]], dtype=np.float32)
@@ -63,31 +69,34 @@ def _extract_macenko_stain_matrix(
 
 
 class MacenkoNormalizer:
-    """Normalisasi pewarnaan Macenko terhadap satu citra referensi dari domain target/sumber."""
+    """Normalisasi pewarnaan Macenko white-balanced terhadap satu citra referensi."""
 
-    def __init__(self, io_intensity: float = 255.0, beta: float = 0.15, alpha: float = 1.0):
-        self.io_intensity = io_intensity
+    def __init__(self, bg_percentile: float = 95.0, beta: float = 0.12, alpha: float = 1.0):
+        self.bg_percentile = bg_percentile
         self.beta = beta
         self.alpha = alpha
+        self.target_bg: np.ndarray | None = None
         self.target_he: np.ndarray | None = None
         self.target_max_c: np.ndarray | None = None
 
     def fit(self, target_rgb: np.ndarray) -> "MacenkoNormalizer":
-        """Pelajari vektor pewarna dan konsentrasi referensi dari citra target."""
+        """Pelajari illuminant latar, vektor pewarna, dan konsentrasi referensi dari citra target."""
+        self.target_bg = _estimate_background_rgb(target_rgb, self.bg_percentile)
         self.target_he, self.target_max_c = _extract_macenko_stain_matrix(
-            target_rgb, self.io_intensity, self.beta, self.alpha
+            target_rgb, self.target_bg, self.beta, self.alpha
         )
         return self
 
     def transform(self, source_rgb: np.ndarray) -> np.ndarray:
-        """Transformasi distribusi pewarna citra sumber agar selaras dengan referensi."""
-        if self.target_he is None or self.target_max_c is None:
+        """Transformasi distribusi pewarna dan illuminant latar citra sumber agar selaras dengan referensi."""
+        if self.target_he is None or self.target_max_c is None or self.target_bg is None:
             raise RuntimeError("MacenkoNormalizer.fit() harus dipanggil sebelum transform().")
 
         h, w, _ = source_rgb.shape
-        od = _rgb_to_od(source_rgb, self.io_intensity).reshape((-1, 3))
+        src_bg = _estimate_background_rgb(source_rgb, self.bg_percentile)
+        od = _rgb_to_od(source_rgb, src_bg).reshape((-1, 3))
         src_he, src_max_c = _extract_macenko_stain_matrix(
-            source_rgb, self.io_intensity, self.beta, self.alpha
+            source_rgb, src_bg, self.beta, self.alpha
         )
         # Konsentrasi fisik tidak negatif (Beer-Lambert) & dibatasi agar tidak meledak di inti pekat
         conc = np.maximum(np.linalg.lstsq(src_he, od.T, rcond=None)[0], 0.0)
@@ -95,7 +104,7 @@ class MacenkoNormalizer:
         conc = conc * scale[:, None]
 
         norm_od = np.maximum(self.target_he @ conc, 0.0)
-        norm_rgb = self.io_intensity * np.exp(-norm_od)
+        norm_rgb = self.target_bg[:, None] * np.exp(-norm_od)
         return np.clip(norm_rgb.T.reshape((h, w, 3)), 0, 255).astype(np.uint8)
 
 

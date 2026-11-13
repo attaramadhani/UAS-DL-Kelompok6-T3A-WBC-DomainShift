@@ -223,47 +223,93 @@ def check_leakage_across_splits(split_csv_paths: Dict[str, str], max_dhash_dist:
     }
 
 
-def make_torch_dataset(domain_dir: str, split_csv: str, split_name: str, input_size: int = 256, normalizer=None, transform=None):
+try:
+    from torch.utils.data import Dataset as _TorchDatasetBase
+except ImportError:
+    _TorchDatasetBase = object
+
+
+class ZhengWBCDataset(_TorchDatasetBase):
+    """Dataset segmentasi WBC Zheng et al. dengan in-memory cache untuk mempercepat multi-epoch Colab."""
+
+    def __init__(
+        self,
+        domain_dir: str,
+        split_csv: str,
+        split_name: str,
+        input_size: int = 256,
+        normalizer=None,
+        transform=None,
+        cache_in_memory: bool = True,
+    ):
+        self.domain_dir = domain_dir
+        self.input_size = input_size
+        self.normalizer = normalizer
+        self.transform = transform
+        self.cache_in_memory = cache_in_memory
+        self.mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+        self.std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+
+        self.items = []
+        with open(split_csv, encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                if split_name == "all" or row["split"] == split_name:
+                    self.items.append(row)
+
+        self._cache = [self._load_pair(item) for item in self.items] if cache_in_memory else None
+
+    def _load_pair(self, item: Dict[str, str]) -> Tuple[np.ndarray, np.ndarray, str]:
+        img = Image.open(os.path.join(self.domain_dir, item["image_file"])).convert("RGB")
+        mask = Image.open(os.path.join(self.domain_dir, item["mask_file"])).convert("L")
+
+        img = img.resize((self.input_size, self.input_size), Image.Resampling.BILINEAR)
+        mask = mask.resize((self.input_size, self.input_size), Image.Resampling.NEAREST)
+
+        img_np = np.asarray(img, dtype=np.uint8)
+        mask_np = encode_mask_to_classes(np.asarray(mask)).astype(np.uint8)
+        if self.normalizer is not None:
+            img_np = self.normalizer.transform(img_np)
+        return img_np, mask_np, item["id"]
+
+    def __len__(self):
+        return len(self.items)
+
+    def __getitem__(self, idx):
+        import torch
+
+        if self._cache is not None:
+            img_np, mask_np, item_id = self._cache[idx]
+            img_np = img_np.copy()
+            mask_np = mask_np.copy()
+        else:
+            img_np, mask_np, item_id = self._load_pair(self.items[idx])
+
+        if self.transform is not None:
+            augmented = self.transform(image=img_np, mask=mask_np)
+            img_np, mask_np = augmented["image"], augmented["mask"]
+
+        img_f = (img_np.astype(np.float32) / 255.0 - self.mean) / self.std
+        img_t = torch.from_numpy(img_f.transpose(2, 0, 1)).float()
+        mask_t = torch.from_numpy(mask_np.astype(np.int64)).long()
+        return img_t, mask_t, item_id
+
+
+def make_torch_dataset(
+    domain_dir: str,
+    split_csv: str,
+    split_name: str,
+    input_size: int = 256,
+    normalizer=None,
+    transform=None,
+    cache_in_memory: bool = True,
+):
     """Bangun PyTorch Dataset untuk pelatihan/evaluasi di Colab."""
-    import torch
-    from torch.utils.data import Dataset
-
-    rows = []
-    with open(split_csv, encoding="utf-8") as f:
-        for row in csv.DictReader(f):
-            if split_name == "all" or row["split"] == split_name:
-                rows.append(row)
-
-    class ZhengWBCDataset(Dataset):
-        def __init__(self):
-            self.items = rows
-            self.mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
-            self.std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
-
-        def __len__(self):
-            return len(self.items)
-
-        def __getitem__(self, idx):
-            item = self.items[idx]
-            img = Image.open(os.path.join(domain_dir, item["image_file"])).convert("RGB")
-            mask = Image.open(os.path.join(domain_dir, item["mask_file"])).convert("L")
-
-            img = img.resize((input_size, input_size), Image.Resampling.BILINEAR)
-            mask = mask.resize((input_size, input_size), Image.Resampling.NEAREST)
-
-            img_np = np.asarray(img, dtype=np.uint8)
-            mask_np = encode_mask_to_classes(np.asarray(mask))
-
-            if normalizer is not None:
-                img_np = normalizer.transform(img_np)
-
-            if transform is not None:
-                augmented = transform(image=img_np, mask=mask_np)
-                img_np, mask_np = augmented["image"], augmented["mask"]
-
-            img_f = (img_np.astype(np.float32) / 255.0 - self.mean) / self.std
-            img_t = torch.from_numpy(img_f.transpose(2, 0, 1)).float()
-            mask_t = torch.from_numpy(mask_np.astype(np.int64)).long()
-            return img_t, mask_t, item["id"]
-
-    return ZhengWBCDataset()
+    return ZhengWBCDataset(
+        domain_dir=domain_dir,
+        split_csv=split_csv,
+        split_name=split_name,
+        input_size=input_size,
+        normalizer=normalizer,
+        transform=transform,
+        cache_in_memory=cache_in_memory,
+    )

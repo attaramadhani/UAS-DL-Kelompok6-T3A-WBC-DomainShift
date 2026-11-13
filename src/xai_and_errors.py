@@ -1,8 +1,28 @@
 """Analisis galeri kesalahan (min. 8 kasus) dan peta interpretabilitas Grad-CAM (Kisi-Kisi 3.4)."""
 
+import os
 from typing import Dict, List
 import numpy as np
 import matplotlib.pyplot as plt
+
+
+def summarize_error_categories(records: List[Dict]) -> Dict[str, int]:
+    """Hitung frekuensi kategori kesalahan di seluruh set evaluasi yang diuji."""
+    counts: Dict[str, int] = {}
+    for r in records:
+        cat = r["error_category"]
+        counts[cat] = counts.get(cat, 0) + 1
+    return dict(sorted(counts.items(), key=lambda x: -x[1]))
+
+
+def get_gradcam_target_layer(model):
+    """Ambil layer konvolusi akhir encoder secara aman (ResNet, MobileNetV2, dll.)."""
+    enc = getattr(model, "encoder", model)
+    if hasattr(enc, "layer4"):
+        return enc.layer4[-1]
+    if hasattr(enc, "features"):
+        return enc.features[-1]
+    raise AttributeError(f"Tidak menemukan layer target Grad-CAM pada encoder {type(enc).__name__}")
 
 
 def categorize_segmentation_error(pred: np.ndarray, gt: np.ndarray, img_rgb: np.ndarray, dice_fg: float) -> str:
@@ -62,6 +82,7 @@ def save_error_gallery(records: List[Dict], out_path: str, top_k: int = 8) -> Di
             ax.set_title(titles[c], fontsize=8)
             ax.axis("off")
 
+    os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
     plt.tight_layout()
     plt.savefig(out_path, dpi=180, bbox_inches="tight")
     plt.close(fig)
@@ -88,6 +109,7 @@ def generate_gradcam_grid(model, target_layer, samples: List[Dict], out_path: st
     model.eval().to(device)
     mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
     std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+    cls_label = {0: "Background", 1: "Sitoplasma", 2: "Nukleus"}.get(target_class, f"Kelas {target_class}")
 
     fig, axes = plt.subplots(len(samples), 4, figsize=(12, 2.8 * len(samples)))
     if len(samples) == 1:
@@ -96,7 +118,7 @@ def generate_gradcam_grid(model, target_layer, samples: List[Dict], out_path: st
     with GradCAM(model=model, target_layers=[target_layer]) as cam:
         for i, item in enumerate(samples):
             img_t = item["img_tensor"].unsqueeze(0).to(device)
-            rgb_float = np.clip(item["img_tensor"].cpu().numpy().transpose(1, 2, 0) * std + mean, 0.0, 1.0)
+            rgb_float = np.clip(item["img_tensor"].cpu().numpy().transpose(1, 2, 0) * std + mean, 0.0, 1.0).astype(np.float32)
             pred_cls = torch.from_numpy((item["pred_mask"] == target_class).astype(np.float32)).to(device)
             targets = [SemanticTarget(target_class, pred_cls if pred_cls.sum() > 0 else None)]
             grayscale_cam = cam(input_tensor=img_t, targets=targets)[0]
@@ -109,10 +131,11 @@ def generate_gradcam_grid(model, target_layer, samples: List[Dict], out_path: st
             axes[i, 2].imshow(item["pred_mask"], cmap="viridis", vmin=0, vmax=2, interpolation="nearest")
             axes[i, 2].set_title(f"Prediksi (Dice={item['dice_fg_mean']:.3f})", fontsize=8)
             axes[i, 3].imshow(cam_vis)
-            axes[i, 3].set_title(f"Grad-CAM (Kelas {target_class})", fontsize=8)
+            axes[i, 3].set_title(f"Grad-CAM ({cls_label})", fontsize=8)
             for c in range(4):
                 axes[i, c].axis("off")
 
+    os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
     plt.tight_layout()
     plt.savefig(out_path, dpi=180, bbox_inches="tight")
     plt.close(fig)
