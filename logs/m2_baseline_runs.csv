@@ -1,0 +1,2 @@
+run_name,owner,train_domain,target_domain,arch,encoder,freeze_encoder,loss,aug_mode,input_size,seed,status,val_dice_fg,in_dice_nuc,in_dice_cyto,in_miou_fg,cross_dice_nuc,cross_dice_cyto,cross_miou_fg,cross_hd95_nuc,cross_hd95_cyto,params_m,latency_ms,gpu,duration_sec
+M2_Baseline_UNet_D1_to_D2,Kelompok 6 (Baseline M2),D1,D2,unet,resnet34,False,ce_dice,geom,256,42,success,0.9581,0.9703,0.9435,0.9185,0.6726,0.3482,0.4281,20.66,81.1,24.437,7.831,Tesla T4,160.03

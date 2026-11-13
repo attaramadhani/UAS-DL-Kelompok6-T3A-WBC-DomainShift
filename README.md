@@ -61,9 +61,12 @@ Audit lengkap oleh [`src/audit_eda.py`](src/audit_eda.py) (`logs/data_audit_repo
 ```text
 ├── configs/experiment_config.yaml        # Parameter arsitektur, seed (42,123,999), dan matriks uji
 ├── docs/
-│   ├── Proposal_M1_Kelompok6_T3A.docx    # Proposal resmi Milestone M1 (maks. 2 halaman)
-│   └── figures/                          # Visualisasi EDA, error gallery & Grad-CAM
-├── logs/data_audit_report.json           # Log audit dimensi, artefak masker & cek kebocoran
+│   ├── Proposal_M1_Kelompok6_T3A.docx/.pdf   # Proposal resmi Milestone M1 (2 halaman)
+│   ├── Laporan_Kemajuan_M2_Kelompok6_T3A.docx/.pdf # Laporan kemajuan Milestone M2 (1 halaman)
+│   └── figures/                              # Visualisasi EDA, error gallery & Grad-CAM
+├── logs/
+│   ├── data_audit_report.json                # Log audit dimensi, artefak masker & cek kebocoran
+│   └── m2_baseline_runs.csv                  # Log run baseline M2 (U-Net ResNet-34, Tesla T4)
 ├── notebooks/
 │   ├── 01_M2_Audit_EDA_Baseline.ipynb    # Notebook Colab M2 (Audit, EDA & Model Baseline)
 │   └── 02_M3_Main_Experiments_Ablations_XAI.ipynb  # Notebook Colab M3 (3 Seed, 4 Ablasi, Error Gallery & XAI)

@@ -72,6 +72,27 @@ def evaluate_loader(model, loader: DataLoader, device: str = "cuda", capture_rec
     return summary, records
 
 
+_SPLIT_METRIC_SPECS = [
+    ("dice_nuc", "dice_nucleus", 4),
+    ("dice_cyto", "dice_cytoplasm", 4),
+    ("iou_nuc", "iou_nucleus", 4),
+    ("iou_cyto", "iou_cytoplasm", 4),
+    ("miou_fg", "miou_fg", 4),
+    ("hd95_nuc", "hd95_nucleus", 2),
+    ("hd95_cyto", "hd95_cytoplasm", 2),
+]
+
+
+def _extract_split_metrics(summary: Dict[str, Dict[str, float]], prefix: str) -> Dict[str, float]:
+    """Ekstrak rerata dan std per citra (Kisi-Kisi Tabel 3.3) untuk prefix in/cross."""
+    extracted: Dict[str, float] = {}
+    for col_suffix, metric_key, digits in _SPLIT_METRIC_SPECS:
+        stat = summary.get(metric_key, {})
+        extracted[f"{prefix}_{col_suffix}"] = round(float(stat.get("mean", 0.0)), digits)
+        extracted[f"{prefix}_{col_suffix}_std"] = round(float(stat.get("std", 0.0)), digits)
+    return extracted
+
+
 def run_experiment(
     run_name: str,
     owner: str,
@@ -205,14 +226,8 @@ def run_experiment(
         "seed": seed,
         "status": status,
         "val_dice_fg": round(best_val_dice, 4),
-        "in_dice_nuc": round(in_summary.get("dice_nucleus", {}).get("mean", 0.0), 4),
-        "in_dice_cyto": round(in_summary.get("dice_cytoplasm", {}).get("mean", 0.0), 4),
-        "in_miou_fg": round(in_summary.get("miou_fg", {}).get("mean", 0.0), 4),
-        "cross_dice_nuc": round(cross_summary.get("dice_nucleus", {}).get("mean", 0.0), 4),
-        "cross_dice_cyto": round(cross_summary.get("dice_cytoplasm", {}).get("mean", 0.0), 4),
-        "cross_miou_fg": round(cross_summary.get("miou_fg", {}).get("mean", 0.0), 4),
-        "cross_hd95_nuc": round(cross_summary.get("hd95_nucleus", {}).get("mean", 0.0), 2),
-        "cross_hd95_cyto": round(cross_summary.get("hd95_cytoplasm", {}).get("mean", 0.0), 2),
+        **_extract_split_metrics(in_summary, "in"),
+        **_extract_split_metrics(cross_summary, "cross"),
         "params_m": eff.get("total_params_m", 0.0),
         "latency_ms": eff.get("latency_mean_ms", 0.0),
         "gpu": eff.get("gpu_name", "CPU"),
