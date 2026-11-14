@@ -14,6 +14,18 @@
 | 3 | `240441100086` | **M. Rafly Kurniawan** | Model DeepLabV3+, eksekusi multi-seed & efisiensi | Resolusi masukan & augmentasi (`128×128` vs `256×256`, `none` vs `geom`) |
 | 4 | `240441100038` | **Naufal Husain** | Metrik evaluasi per citra, *error gallery* & Grad-CAM | Pilihan *encoder* & *fine-tuning* (*ResNet-34 Full vs MobileNetV2 Full vs ResNet-34 Frozen*) |
 
+### Daftar Deliverable Resmi (M1 - M3) & Arsip Bobot
+
+| Milestone | Dokumen | Format & Tautan Repositori | Keterangan Ringkas |
+| :--- | :--- | :--- | :--- |
+| **M1** | Proposal Proyek | [`Proposal_M1_Kelompok6_T3A.pdf`](docs/Proposal_M1_Kelompok6_T3A.pdf) / [`.docx`](docs/Proposal_M1_Kelompok6_T3A.docx) | Rancangan eksperimen, hipotesis & audit awal (2 hal) |
+| **M2** | Laporan Kemajuan | [`Laporan_Kemajuan_M2_Kelompok6_T3A.pdf`](docs/Laporan_Kemajuan_M2_Kelompok6_T3A.pdf) / [`.docx`](docs/Laporan_Kemajuan_M2_Kelompok6_T3A.docx) | Audit 400 citra anti-leakage & baseline U-Net (1 hal) |
+| **M3** | Laporan Akhir (Artikel SINTA 2) | [`Laporan_Akhir_M3_Kelompok6_T3A.pdf`](docs/Laporan_Akhir_M3_Kelompok6_T3A.pdf) / [`.docx`](docs/Laporan_Akhir_M3_Kelompok6_T3A.docx) | 8 hal 2-kolom IMRaD, abstrak EN <= 200 kata & 9 sitasi |
+| **M3** | Model Card Klinis | [`Model_Card_M3_Kelompok6_T3A.pdf`](docs/Model_Card_M3_Kelompok6_T3A.pdf) / [`.docx`](docs/Model_Card_M3_Kelompok6_T3A.docx) | 1 hal: metrik, latensi T4, batasan XAI & kondisi *Do-Not-Use* |
+| **M3** | Lembar Kontribusi | [`Lembar_Kontribusi_M3_Kelompok6_T3A.pdf`](docs/Lembar_Kontribusi_M3_Kelompok6_T3A.pdf) / [`.docx`](docs/Lembar_Kontribusi_M3_Kelompok6_T3A.docx) | 1 hal: peran, ablasi 4 anggota, integritas & blok TTD |
+| **M3** | Slide Presentasi Final | [`Slide_Presentasi_M3_Kelompok6_T3A.pdf`](docs/Slide_Presentasi_M3_Kelompok6_T3A.pdf) / [`.pptx`](docs/Slide_Presentasi_M3_Kelompok6_T3A.pptx) | 14 slide 16:9 termasuk *"Apa yang Tidak Berhasil"* & Grad-CAM |
+| **Bobot** | Arsip Checkpoint `.pth` Colab | [Google Drive M2 & M3 Bundle](https://drive.google.com/drive/folders/101PbkgjCD-y_OaZPzRcqZzdgjoCf2ld8?usp=sharing) | 27 checkpoint beku (M3) + log/grafik lengkap di Drive |
+
 ---
 
 ## 1. Deskripsi Masalah & Dataset Resmi (`Zheng D1/D2`)
@@ -167,9 +179,13 @@ Seluruh **59 run GPU (`Tesla T4`)** selesai dengan status **100% sukses (`59/59`
 ```text
 ├── configs/experiment_config.yaml        # Parameter arsitektur, seed (42,123,999), dan matriks uji
 ├── docs/
-│   ├── Proposal_M1_Kelompok6_T3A.docx/.pdf   # Proposal resmi Milestone M1 (2 halaman)
-│   ├── Laporan_Kemajuan_M2_Kelompok6_T3A.docx/.pdf # Laporan kemajuan Milestone M2 (1 halaman)
-│   └── figures/                              # Visualisasi EDA (M2), error gallery, kurva & Grad-CAM (M3)
+│   ├── Proposal_M1_Kelompok6_T3A.docx/.pdf          # Proposal resmi Milestone M1 (2 halaman)
+│   ├── Laporan_Kemajuan_M2_Kelompok6_T3A.docx/.pdf  # Laporan kemajuan Milestone M2 (1 halaman)
+│   ├── Laporan_Akhir_M3_Kelompok6_T3A.docx/.pdf     # Artikel akhir SINTA 2 Milestone M3 (8 halaman)
+│   ├── Model_Card_M3_Kelompok6_T3A.docx/.pdf        # Model Card ringkas (1 halaman)
+│   ├── Lembar_Kontribusi_M3_Kelompok6_T3A.docx/.pdf # Lembar kontribusi, ablasi & TTD 4 anggota (1 halaman)
+│   ├── Slide_Presentasi_M3_Kelompok6_T3A.pptx/.pdf  # Deck presentasi final 14 slide 16:9
+│   └── figures/                                     # Visualisasi EDA (M2), error gallery, kurva & Grad-CAM (M3)
 ├── logs/
 │   ├── data_audit_report.json                # Log audit lengkap (dimensi, objek, stray pixel, cek kebocoran)
 │   ├── data_audit_per_image.csv              # Tabel audit per citra (400 baris D1 + D2)
