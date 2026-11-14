@@ -1,0 +1,61 @@
+id,domain,strategy,gt_nuc_area_px,gt_cyto_area_px,gt_fg_area_px,dice_nucleus,dice_cytoplasm,dice_fg_mean,iou_nucleus,iou_cytoplasm,miou_fg,hd95_nucleus,hd95_cytoplasm,error_category
+002,D1_InDomain,Baseline_M2,8405,18952,27357,0.9644,0.9728,0.9686,0.9312,0.947,0.9391,2.24,2.0,Kesalahan batas nukleus-sitoplasma
+007,D1_InDomain,Baseline_M2,8928,7389,16317,0.968,0.8913,0.9297,0.9381,0.8039,0.871,3.0,4.0,Ketidakakuratan kontur tepi ringan
+015,D1_InDomain,Baseline_M2,9461,16661,26122,0.9432,0.9456,0.9444,0.8925,0.8968,0.8946,3.0,3.0,Kesalahan batas nukleus-sitoplasma
+016,D1_InDomain,Baseline_M2,7764,5369,13133,0.9803,0.9175,0.9489,0.9613,0.8476,0.9045,2.24,2.83,Ketidakakuratan kontur tepi ringan
+017,D1_InDomain,Baseline_M2,8243,19473,27716,0.9791,0.9648,0.9719,0.959,0.932,0.9455,2.0,3.0,Ketidakakuratan kontur tepi ringan
+018,D1_InDomain,Baseline_M2,9416,16024,25440,0.9738,0.9609,0.9673,0.9489,0.9247,0.9368,2.0,2.24,Ketidakakuratan kontur tepi ringan
+023,D1_InDomain,Baseline_M2,9179,13270,22449,0.9457,0.9412,0.9435,0.897,0.889,0.893,3.0,3.0,Ketidakakuratan kontur tepi ringan
+024,D1_InDomain,Baseline_M2,11319,16845,28164,0.9549,0.9443,0.9496,0.9137,0.8945,0.9041,2.83,3.0,Ketidakakuratan kontur tepi ringan
+032,D1_InDomain,Baseline_M2,8064,5307,13371,0.9847,0.9041,0.9444,0.9699,0.825,0.8975,1.41,4.0,Ketidakakuratan kontur tepi ringan
+035,D1_InDomain,Baseline_M2,9024,16892,25916,0.9452,0.923,0.9341,0.8961,0.8569,0.8765,3.0,6.71,Ketidakakuratan kontur tepi ringan
+036,D1_InDomain,Baseline_M2,7555,5582,13137,0.976,0.9083,0.9421,0.953,0.8319,0.8925,2.24,2.24,Ketidakakuratan kontur tepi ringan
+037,D1_InDomain,Baseline_M2,7222,18118,25340,0.9589,0.9668,0.9628,0.921,0.9357,0.9284,2.83,2.24,Kesalahan batas nukleus-sitoplasma
+042,D1_InDomain,Baseline_M2,9059,18364,27423,0.9618,0.9666,0.9642,0.9263,0.9354,0.9309,2.24,2.24,Kesalahan batas nukleus-sitoplasma
+043,D1_InDomain,Baseline_M2,9075,14389,23464,0.9221,0.9381,0.9301,0.8554,0.8835,0.8695,3.16,3.0,Kesalahan batas nukleus-sitoplasma
+044,D1_InDomain,Baseline_M2,7985,17982,25967,0.9614,0.9554,0.9584,0.9257,0.9146,0.9201,2.0,3.61,Ketidakakuratan kontur tepi ringan
+050,D1_InDomain,Baseline_M2,8278,18113,26391,0.976,0.9776,0.9768,0.9532,0.9563,0.9547,1.41,2.0,Kesalahan batas nukleus-sitoplasma
+058,D1_InDomain,Baseline_M2,7779,14402,22181,0.972,0.9641,0.968,0.9455,0.9306,0.9381,2.24,2.83,Ketidakakuratan kontur tepi ringan
+077,D1_InDomain,Baseline_M2,9618,5488,15106,0.9485,0.8427,0.8956,0.9021,0.7282,0.8151,5.0,4.0,Ketidakakuratan kontur tepi ringan
+098,D1_InDomain,Baseline_M2,5942,2964,8906,0.9708,0.9081,0.9395,0.9433,0.8317,0.8875,2.24,2.0,Ketidakakuratan kontur tepi ringan
+103,D1_InDomain,Baseline_M2,8418,6652,15070,0.974,0.9243,0.9492,0.9492,0.8593,0.9043,2.24,2.24,Ketidakakuratan kontur tepi ringan
+106,D1_InDomain,Baseline_M2,8738,9720,18458,0.9829,0.9533,0.9681,0.9663,0.9108,0.9385,2.0,2.83,Ketidakakuratan kontur tepi ringan
+110,D1_InDomain,Baseline_M2,6661,2951,9612,0.9681,0.88,0.9241,0.9383,0.7858,0.862,3.0,2.84,Ketidakakuratan kontur tepi ringan
+111,D1_InDomain,Baseline_M2,10478,10550,21028,0.9847,0.944,0.9644,0.9698,0.894,0.9319,2.0,3.0,Ketidakakuratan kontur tepi ringan
+114,D1_InDomain,Baseline_M2,10281,6851,17132,0.9782,0.906,0.9421,0.9573,0.8282,0.8928,4.0,4.12,Ketidakakuratan kontur tepi ringan
+123,D1_InDomain,Baseline_M2,14583,12822,27405,0.9845,0.9347,0.9596,0.9696,0.8774,0.9235,2.24,4.0,Ketidakakuratan kontur tepi ringan
+130,D1_InDomain,Baseline_M2,9947,7029,16976,0.986,0.9546,0.9703,0.9725,0.9131,0.9428,2.0,2.0,Ketidakakuratan kontur tepi ringan
+137,D1_InDomain,Baseline_M2,6564,12473,19037,0.976,0.9653,0.9706,0.9531,0.933,0.943,2.0,2.0,Ketidakakuratan kontur tepi ringan
+138,D1_InDomain,Baseline_M2,6210,3490,9700,0.9435,0.8514,0.8974,0.8931,0.7412,0.8171,3.61,3.16,Ketidakakuratan kontur tepi ringan
+141,D1_InDomain,Baseline_M2,6466,11101,17567,0.9779,0.9569,0.9674,0.9568,0.9174,0.9371,1.0,2.83,Ketidakakuratan kontur tepi ringan
+143,D1_InDomain,Baseline_M2,13984,10965,24949,0.9867,0.9508,0.9688,0.9738,0.9062,0.94,2.0,2.24,Ketidakakuratan kontur tepi ringan
+162,D1_InDomain,Baseline_M2,6469,11702,18171,0.9791,0.9671,0.9731,0.959,0.9364,0.9477,1.41,2.0,Ketidakakuratan kontur tepi ringan
+165,D1_InDomain,Baseline_M2,8486,11015,19501,0.9798,0.9645,0.9721,0.9604,0.9314,0.9459,2.0,2.0,Ketidakakuratan kontur tepi ringan
+169,D1_InDomain,Baseline_M2,7180,10592,17772,0.9739,0.9659,0.9699,0.9492,0.934,0.9416,2.0,2.0,Ketidakakuratan kontur tepi ringan
+178,D1_InDomain,Baseline_M2,7750,19414,27164,0.964,0.9656,0.9648,0.9305,0.9334,0.932,3.0,3.0,Kesalahan batas nukleus-sitoplasma
+185,D1_InDomain,Baseline_M2,7673,9659,17332,0.9719,0.9591,0.9655,0.9454,0.9214,0.9334,2.0,2.0,Ketidakakuratan kontur tepi ringan
+193,D1_InDomain,Baseline_M2,6961,6109,13070,0.9802,0.9403,0.9602,0.9612,0.8873,0.9242,2.0,2.24,Ketidakakuratan kontur tepi ringan
+197,D1_InDomain,Baseline_M2,8464,18845,27309,0.9579,0.9424,0.9501,0.9192,0.891,0.9051,3.61,4.24,Ketidakakuratan kontur tepi ringan
+198,D1_InDomain,Baseline_M2,7254,19429,26683,0.9483,0.9369,0.9426,0.9018,0.8813,0.8915,6.05,5.0,Ketidakakuratan kontur tepi ringan
+211,D1_InDomain,Baseline_M2,6132,14951,21083,0.9747,0.9721,0.9734,0.9507,0.9457,0.9482,1.41,2.0,Ketidakakuratan kontur tepi ringan
+215,D1_InDomain,Baseline_M2,5619,13225,18844,0.9708,0.9566,0.9637,0.9432,0.9169,0.93,2.0,5.0,Ketidakakuratan kontur tepi ringan
+240,D1_InDomain,Baseline_M2,6526,8261,14787,0.9785,0.9468,0.9627,0.958,0.899,0.9285,2.0,2.24,Ketidakakuratan kontur tepi ringan
+243,D1_InDomain,Baseline_M2,6458,12381,18839,0.9548,0.959,0.9569,0.9135,0.9213,0.9174,10.73,2.59,Kesalahan batas nukleus-sitoplasma
+278,D1_InDomain,Baseline_M2,4277,16958,21235,0.9686,0.9724,0.9705,0.9391,0.9464,0.9428,2.0,2.24,Kesalahan batas nukleus-sitoplasma
+280,D1_InDomain,Baseline_M2,4801,10936,15737,0.9621,0.9659,0.964,0.9269,0.934,0.9304,2.0,2.0,Kesalahan batas nukleus-sitoplasma
+289,D1_InDomain,Baseline_M2,8923,6761,15684,0.9607,0.9107,0.9357,0.9243,0.8361,0.8802,4.38,4.0,Ketidakakuratan kontur tepi ringan
+004,D2_CrossDomain,Baseline_M2,5773,16031,21804,0.9276,0.8394,0.8835,0.8651,0.7233,0.7942,8.49,14.14,Ketidakakuratan kontur tepi ringan
+017,D2_CrossDomain,Baseline_M2,7669,17698,25367,0.6237,0.3513,0.4875,0.4532,0.2131,0.3332,32.26,57.56,Under-segmentasi sitoplasma (tepi pucat hilang)
+019,D2_CrossDomain,Baseline_M2,4809,10545,15354,0.9778,0.7519,0.8648,0.9565,0.6025,0.7795,1.41,15.84,Ketidakakuratan kontur tepi ringan
+028,D2_CrossDomain,Baseline_M2,3211,6178,9389,0.6244,0.5383,0.5814,0.454,0.3683,0.4111,27.95,56.62,Under-segmentasi sitoplasma (tepi pucat hilang)
+034,D2_CrossDomain,Baseline_M2,4561,1539,6100,0.8979,0.3225,0.6102,0.8147,0.1922,0.5035,68.36,64.86,Ketidakakuratan kontur tepi ringan
+048,D2_CrossDomain,Baseline_M2,7984,1182,9166,0.8824,0.377,0.6297,0.7895,0.2323,0.5109,32.29,27.43,Ketidakakuratan kontur tepi ringan
+053,D2_CrossDomain,Baseline_M2,7857,2714,10571,0.9579,0.3579,0.6579,0.9192,0.2179,0.5686,25.46,34.3,Over-segmentasi sitoplasma (RBC/latar ikut tersegmentasi)
+063,D2_CrossDomain,Baseline_M2,3780,7742,11522,0.932,0.4872,0.7096,0.8727,0.3221,0.5974,10.0,76.75,Under-segmentasi sitoplasma (tepi pucat hilang)
+066,D2_CrossDomain,Baseline_M2,6895,3354,10249,0.9612,0.8057,0.8835,0.9254,0.6747,0.8,3.0,5.83,Ketidakakuratan kontur tepi ringan
+067,D2_CrossDomain,Baseline_M2,3485,2014,5499,0.8082,0.4912,0.6497,0.6781,0.3256,0.5019,55.45,72.14,Ketidakakuratan kontur tepi ringan
+073,D2_CrossDomain,Baseline_M2,5103,8906,14009,0.547,0.1614,0.3542,0.3765,0.0878,0.2321,29.59,52.58,Under-segmentasi sitoplasma (tepi pucat hilang)
+083,D2_CrossDomain,Baseline_M2,5912,10221,16133,0.6753,0.0185,0.3469,0.5097,0.0093,0.2595,73.74,69.46,Kegagalan deteksi / pergeseran domain berat
+088,D2_CrossDomain,Baseline_M2,9382,7770,17152,0.1258,0.2748,0.2003,0.0671,0.1593,0.1132,59.95,93.63,Kegagalan deteksi / pergeseran domain berat
+089,D2_CrossDomain,Baseline_M2,8436,4029,12465,0.8569,0.1615,0.5092,0.7496,0.0879,0.4188,66.54,83.77,Over-segmentasi sitoplasma (RBC/latar ikut tersegmentasi)
+096,D2_CrossDomain,Baseline_M2,11084,11271,22355,0.9835,0.9533,0.9684,0.9676,0.9108,0.9392,2.0,2.24,Ketidakakuratan kontur tepi ringan

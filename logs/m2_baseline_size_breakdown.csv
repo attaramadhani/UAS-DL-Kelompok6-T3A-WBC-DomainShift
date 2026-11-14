@@ -1,0 +1,4 @@
+strategy,domain,size_bucket,n_images,fg_area_min_px,fg_area_max_px,dice_nucleus_mean,dice_cytoplasm_mean,miou_fg_mean,miou_fg_std,hd95_nucleus_mean,hd95_cytoplasm_mean
+Baseline_M2,D2_CrossDomain,Kecil,5,5499,10249,0.8348,0.5069,0.5455,0.1481,37.41,45.38
+Baseline_M2,D2_CrossDomain,Sedang,5,10571,15354,0.8543,0.384,0.5193,0.2054,26.6,52.65
+Baseline_M2,D2_CrossDomain,Besar,5,16133,25367,0.6672,0.4875,0.4879,0.3585,35.29,47.41
