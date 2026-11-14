@@ -1,0 +1,14 @@
+comparison,n_pairs,mean_baseline,mean_candidate,mean_diff,std_diff,t_stat,p_ttest_paired,p_wilcoxon
+D1->D2 | deeplabv3plus: ColorJitter vs NoAdapt,3,0.5977,0.6995,0.1018,0.0667,2.6426,0.11832,
+D1->D2 | deeplabv3plus: Macenko vs NoAdapt,3,0.5977,0.5485,-0.0492,0.0811,-1.051,0.40352,
+D1->D2 | deeplabv3plus: Reinhard vs NoAdapt,3,0.5977,0.569,-0.0287,0.0743,-0.6683,0.57277,
+D1->D2 | unet: ColorJitter vs NoAdapt,3,0.5658,0.6618,0.096,0.0756,2.1994,0.15887,
+D1->D2 | unet: Macenko vs NoAdapt,3,0.5658,0.5357,-0.0301,0.118,-0.4417,0.7019,
+D1->D2 | unet: Reinhard vs NoAdapt,3,0.5658,0.4945,-0.0713,0.2206,-0.5599,0.63191,
+D2->D1 | deeplabv3plus: ColorJitter vs NoAdapt,3,0.2096,0.6534,0.4438,0.0341,22.569,0.00196,
+D2->D1 | deeplabv3plus: Macenko vs NoAdapt,3,0.2096,0.5464,0.3368,0.0571,10.2163,0.00945,
+D2->D1 | deeplabv3plus: Reinhard vs NoAdapt,3,0.2096,0.6449,0.4353,0.0228,33.0263,0.00092,
+D2->D1 | unet: ColorJitter vs NoAdapt,3,0.2474,0.5689,0.3215,0.0255,21.8361,0.00209,
+D2->D1 | unet: Macenko vs NoAdapt,3,0.2474,0.5667,0.3193,0.0897,6.1662,0.02531,
+D2->D1 | unet: Reinhard vs NoAdapt,3,0.2474,0.5481,0.3007,0.0657,7.9325,0.01552,
+Semua Kondisi: DeepLabV3+ vs U-Net,24,0.5236,0.5586,0.035,0.0794,2.161,0.04135,0.05264

@@ -1,0 +1,15 @@
+direction,model,error_category,count,total_test
+D1->D2,NoAdapt (Baseline),Under-segmentasi sitoplasma (tepi pucat hilang),7,15
+D1->D2,NoAdapt (Baseline),Ketidakakuratan kontur tepi ringan,4,15
+D1->D2,NoAdapt (Baseline),Over-segmentasi sitoplasma (RBC/latar ikut tersegmentasi),4,15
+D1->D2,ColorJitter (Terbaik),Ketidakakuratan kontur tepi ringan,9,15
+D1->D2,ColorJitter (Terbaik),Under-segmentasi sitoplasma (tepi pucat hilang),3,15
+D1->D2,ColorJitter (Terbaik),Over-segmentasi sitoplasma (RBC/latar ikut tersegmentasi),3,15
+D2->D1,NoAdapt (Baseline),Kegagalan deteksi / pergeseran domain berat,26,45
+D2->D1,NoAdapt (Baseline),Under-segmentasi sitoplasma (tepi pucat hilang),13,45
+D2->D1,NoAdapt (Baseline),Ketidakakuratan kontur tepi ringan,5,45
+D2->D1,NoAdapt (Baseline),Kesalahan batas nukleus-sitoplasma,1,45
+D2->D1,ColorJitter (Terbaik),Under-segmentasi sitoplasma (tepi pucat hilang),25,45
+D2->D1,ColorJitter (Terbaik),Ketidakakuratan kontur tepi ringan,13,45
+D2->D1,ColorJitter (Terbaik),Kegagalan deteksi / pergeseran domain berat,6,45
+D2->D1,ColorJitter (Terbaik),Kesalahan batas nukleus-sitoplasma,1,45
