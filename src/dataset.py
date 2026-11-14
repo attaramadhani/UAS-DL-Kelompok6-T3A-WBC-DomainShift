@@ -217,8 +217,11 @@ def check_leakage_across_splits(split_csv_paths: Dict[str, str], max_dhash_dist:
         "total_images": len(rows),
         "split_counts": split_counts,
         "cross_split_leakage_exact": len(exact_cross_split),
+        "cross_split_leakage_exact_pairs": exact_cross_split,
         "cross_split_leakage_dhash_le_4bits": len(near_cross_split),
+        "cross_split_leakage_dhash_pairs": near_cross_split,
         "cross_domain_near_duplicates_le_4bits": len(near_cross_domain),
+        "cross_domain_near_duplicate_pairs": near_cross_domain,
         "within_train_exact_duplicates_grouped": exact_within_train,
     }
 

@@ -65,26 +65,29 @@ Audit lengkap oleh [`src/audit_eda.py`](src/audit_eda.py) (`logs/data_audit_repo
 │   ├── Laporan_Kemajuan_M2_Kelompok6_T3A.docx/.pdf # Laporan kemajuan Milestone M2 (1 halaman)
 │   └── figures/                              # Visualisasi EDA, error gallery & Grad-CAM
 ├── logs/
-│   ├── data_audit_report.json                # Log audit dimensi, artefak masker & cek kebocoran
+│   ├── data_audit_report.json                # Log audit lengkap (dimensi, objek, stray pixel, cek kebocoran)
+│   ├── data_audit_per_image.csv              # Tabel audit per citra (400 baris D1 + D2)
 │   └── m2_baseline_runs.csv                  # Log run baseline M2 (U-Net ResNet-34, Tesla T4)
 ├── notebooks/
-│   ├── 01_M2_Audit_EDA_Baseline.ipynb    # Notebook Colab M2 (Audit, EDA & Model Baseline)
+│   ├── 01_M2_Audit_EDA_Baseline.ipynb    # Notebook Colab M2 (Audit Lengkap, EDA 24-Citra & Baseline)
 │   └── 02_M3_Main_Experiments_Ablations_XAI.ipynb  # Notebook Colab M3 (3 Seed, 4 Ablasi, Error Gallery & XAI)
 ├── splits/                               # Berkas split tetap anti-kebocoran (seed=42)
 ├── src/
-│   ├── audit_eda.py                      # Skrip audit otomatis, perceptual hash & grafik EDA
+│   ├── audit_eda.py                      # Skrip audit menyeluruh, jumlah/luas objek, dHash & 5 grafik EDA
 │   ├── dataset.py                        # Pengunduh Mendeley, label mapper & anti-leakage splitter
+│   ├── gdrive_sync.py                    # Sinkronisasi otomatis log, grafik, bobot & arsip ke Google Drive
+│   ├── m3_reporting.py                   # Agregasi 3-seed, uji statistik berpasangan, ablasi & grafik M3
 │   ├── stain_norm.py                     # Macenko & Reinhard stain normalization (murni NumPy)
-│   ├── models.py                         # U-Net vs DeepLabV3+ (pralatih ImageNet) & loss functions
+│   ├── models.py                         # U-Net vs DeepLabV3+ (pralatih ImageNet), seed locking & loss
 │   ├── metrics.py                        # Dice/IoU per kelas, mIoU, HD95 per citra & benchmark latensi
-│   ├── trainer.py                        # Pipeline latih, validasi & eksperimen multi-run
-│   └── xai_and_errors.py                 # Galeri 8 kesalahan berkategori & peta Grad-CAM
+│   ├── trainer.py                        # Pipeline latih, validasi, histori epoch & eksperimen multi-run
+│   └── xai_and_errors.py                 # Galeri kesalahan, stratifikasi ukuran objek, kurva & Grad-CAM
 └── requirements.txt
 ```
 
 ### Langkah Menjalankan di Google Colab (GPU T4 / Colab Pro)
-1. Buka [`notebooks/01_M2_Audit_EDA_Baseline.ipynb`](notebooks/01_M2_Audit_EDA_Baseline.ipynb) di Google Colab untuk verifikasi audit data & model baseline (Milestone M2).
-2. Buka [`notebooks/02_M3_Main_Experiments_Ablations_XAI.ipynb`](notebooks/02_M3_Main_Experiments_Ablations_XAI.ipynb) lalu pilih **Runtime → Run all** untuk mereproduksi seluruh eksperimen utama (`U-Net` vs `DeepLabV3+` × 3 seed), 4 studi ablasi anggota, tabel efisiensi (`batch=1`, warm-up 50 citra), galeri kesalahan, dan Grad-CAM.
+1. Buka [`notebooks/01_M2_Audit_EDA_Baseline.ipynb`](notebooks/01_M2_Audit_EDA_Baseline.ipynb) di Google Colab untuk verifikasi audit data menyeluruh, grafik konversi 24 citra, & model baseline (Milestone M2), lalu beri izin akses Google Drive saat diminta di Sel 1 agar hasil tersimpan ke folder Drive `101PbkgjCD-y_OaZPzRcqZzdgjoCf2ld8`.
+2. Buka [`notebooks/02_M3_Main_Experiments_Ablations_XAI.ipynb`](notebooks/02_M3_Main_Experiments_Ablations_XAI.ipynb) lalu pilih **Runtime -> Run all** untuk mereproduksi dari nol seluruh 48 run utama (`U-Net` vs `DeepLabV3+` x 3 seed), uji statistik berpasangan, 4 studi ablasi anggota (11 run), tabel efisiensi (`K7`), analisis ukuran objek (`K5`), galeri kesalahan, Grad-CAM, dan sinkronisasi otomatis berkala ke Google Drive (`M3_Main_Experiments_XAI/`).
 3. Atau jalankan audit data lokal langsung via CLI:
    ```bash
    python src/audit_eda.py

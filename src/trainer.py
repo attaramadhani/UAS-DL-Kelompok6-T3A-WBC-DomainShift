@@ -1,6 +1,7 @@
 """Pipeline pelatihan, validasi, logging run, dan uji silang-domain untuk T3-A."""
 
 import csv
+import inspect
 import os
 import time
 from typing import Callable, Dict, List, Optional
@@ -16,24 +17,29 @@ from src.models import build_loss, build_segmentation_model, set_seed
 from src.xai_and_errors import categorize_segmentation_error
 
 
-def get_train_transforms(aug_mode: str = "geom") -> Optional[A.Compose]:
+def get_train_transforms(aug_mode: str = "geom", seed: Optional[int] = None) -> Optional[A.Compose]:
     """Bangun augmentasi untuk eksperimen/ablasi ('none', 'geom', atau 'color_geom')."""
     if aug_mode == "none":
         return None
     if aug_mode == "geom":
-        return A.Compose([
+        tfms = [
             A.HorizontalFlip(p=0.5),
             A.VerticalFlip(p=0.5),
             A.RandomRotate90(p=0.5),
-        ])
-    if aug_mode == "color_geom":
-        return A.Compose([
+        ]
+    elif aug_mode == "color_geom":
+        tfms = [
             A.HorizontalFlip(p=0.5),
             A.VerticalFlip(p=0.5),
             A.RandomRotate90(p=0.5),
             A.ColorJitter(brightness=0.25, contrast=0.25, saturation=0.25, hue=0.10, p=0.8),
-        ])
-    raise ValueError(f"Mode augmentasi tidak dikenal: {aug_mode}")
+        ]
+    else:
+        raise ValueError(f"Mode augmentasi tidak dikenal: {aug_mode}")
+
+    if seed is not None and "seed" in inspect.signature(A.Compose).parameters:
+        return A.Compose(tfms, seed=seed)
+    return A.Compose(tfms)
 
 
 @torch.no_grad()
@@ -64,6 +70,8 @@ def evaluate_loader(
                 rgb_vis = np.clip(imgs[idx].cpu().numpy().transpose(1, 2, 0) * std + mean, 0.0, 1.0)
                 rgb_u8 = (rgb_vis * 255.0).astype(np.uint8)
                 cat = categorize_segmentation_error(preds[idx], gts[idx], rgb_u8, m["dice_fg_mean"])
+                gt_nuc_px = int((gts[idx] == 2).sum())
+                gt_cyto_px = int((gts[idx] == 1).sum())
                 records.append({
                     "id": img_ids[idx],
                     "img_tensor": imgs[idx].cpu(),
@@ -71,6 +79,16 @@ def evaluate_loader(
                     "gt_mask": gts[idx],
                     "pred_mask": preds[idx],
                     "dice_fg_mean": m["dice_fg_mean"],
+                    "dice_nucleus": m["dice_nucleus"],
+                    "dice_cytoplasm": m["dice_cytoplasm"],
+                    "iou_nucleus": m["iou_nucleus"],
+                    "iou_cytoplasm": m["iou_cytoplasm"],
+                    "miou_fg": m["miou_fg"],
+                    "hd95_nucleus": m.get("hd95_nucleus", np.nan),
+                    "hd95_cytoplasm": m.get("hd95_cytoplasm", np.nan),
+                    "gt_nuc_area_px": gt_nuc_px,
+                    "gt_cyto_area_px": gt_cyto_px,
+                    "gt_fg_area_px": gt_nuc_px + gt_cyto_px,
                     "error_category": cat,
                 })
 
@@ -123,6 +141,7 @@ def run_experiment(
     device: str = "cuda",
     strategy: str = "",
     capture_test_records: bool = True,
+    history_dir: Optional[str] = "logs/histories",
 ) -> Dict[str, object]:
     """Jalankan satu eksperimen penuh: train -> val model selection -> evaluate in-domain & cross-domain."""
     t_start = time.perf_counter()
@@ -137,7 +156,7 @@ def run_experiment(
         "train",
         input_size=input_size,
         normalizer=train_normalizer,
-        transform=get_train_transforms(aug_mode),
+        transform=get_train_transforms(aug_mode, seed=seed),
     )
     val_ds = make_torch_dataset(
         domain_dirs[train_domain],
@@ -252,12 +271,24 @@ def run_experiment(
         **_extract_split_metrics(in_summary, "in"),
         **_extract_split_metrics(cross_summary, "cross"),
         "params_m": eff.get("total_params_m", 0.0),
+        "trainable_params_m": eff.get("trainable_params_m", 0.0),
         "latency_ms": eff.get("latency_mean_ms", 0.0),
+        "latency_std_ms": eff.get("latency_std_ms", 0.0),
+        "fps": eff.get("fps", 0.0),
         "gpu": eff.get("gpu_name", "CPU"),
         "duration_sec": elapsed_sec,
     }
 
-    os.makedirs(os.path.dirname(log_csv_path), exist_ok=True)
+    if history_dir and history["train_loss"]:
+        os.makedirs(history_dir, exist_ok=True)
+        hist_path = os.path.join(history_dir, f"{run_name}.csv")
+        with open(hist_path, "w", newline="", encoding="utf-8") as hf:
+            hw = csv.writer(hf)
+            hw.writerow(["epoch", "train_loss", "val_dice_fg"])
+            for ep_idx, (tr_l, vd) in enumerate(zip(history["train_loss"], history["val_dice_fg"]), 1):
+                hw.writerow([ep_idx, round(float(tr_l), 6), round(float(vd), 6)])
+
+    os.makedirs(os.path.dirname(log_csv_path) or ".", exist_ok=True)
     write_header = not os.path.exists(log_csv_path)
     with open(log_csv_path, "a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=list(row.keys()))

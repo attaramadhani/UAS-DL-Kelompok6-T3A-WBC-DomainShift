@@ -84,7 +84,7 @@ def save_error_gallery(records: List[Dict], out_path: str, top_k: int = 8) -> Di
 
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
     plt.tight_layout()
-    plt.savefig(out_path, dpi=180, bbox_inches="tight")
+    plt.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
     return counts
 
@@ -137,5 +137,138 @@ def generate_gradcam_grid(model, target_layer, samples: List[Dict], out_path: st
 
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
     plt.tight_layout()
+    plt.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+
+def records_to_dataframe(records: List[Dict], strategy: str = "", domain_label: str = ""):
+    """Ekstrak metrik per citra dari records ke DataFrame bersih (tanpa tensor/array)."""
+    import pandas as pd
+
+    rows = []
+    for r in records:
+        rows.append({
+            "id": r["id"],
+            "domain": domain_label or r.get("domain", ""),
+            "strategy": strategy,
+            "gt_nuc_area_px": int(r.get("gt_nuc_area_px", 0)),
+            "gt_cyto_area_px": int(r.get("gt_cyto_area_px", 0)),
+            "gt_fg_area_px": int(r.get("gt_fg_area_px", 0)),
+            "dice_nucleus": round(float(r.get("dice_nucleus", 0.0)), 4),
+            "dice_cytoplasm": round(float(r.get("dice_cytoplasm", 0.0)), 4),
+            "dice_fg_mean": round(float(r.get("dice_fg_mean", 0.0)), 4),
+            "iou_nucleus": round(float(r.get("iou_nucleus", 0.0)), 4),
+            "iou_cytoplasm": round(float(r.get("iou_cytoplasm", 0.0)), 4),
+            "miou_fg": round(float(r.get("miou_fg", 0.0)), 4),
+            "hd95_nucleus": round(float(r.get("hd95_nucleus", np.nan)), 2),
+            "hd95_cytoplasm": round(float(r.get("hd95_cytoplasm", np.nan)), 2),
+            "error_category": r.get("error_category", ""),
+        })
+    return pd.DataFrame(rows)
+
+
+def summarize_by_object_size(records: List[Dict], strategy: str = "", domain_label: str = ""):
+    """Kelompokkan performa per ukuran objek foreground (Kecil / Sedang / Besar, Kisi-Kisi K5)."""
+    import pandas as pd
+
+    df = records_to_dataframe(records, strategy=strategy, domain_label=domain_label)
+    if df.empty or df["gt_fg_area_px"].nunique() < 3:
+        df["size_bucket"] = "Semua"
+    else:
+        df["size_bucket"] = pd.qcut(df["gt_fg_area_px"], q=3, labels=["Kecil", "Sedang", "Besar"], duplicates="drop")
+
+    rows = []
+    for bucket, sub in df.groupby("size_bucket", observed=True):
+        rows.append({
+            "strategy": strategy,
+            "domain": domain_label,
+            "size_bucket": str(bucket),
+            "n_images": len(sub),
+            "fg_area_min_px": int(sub["gt_fg_area_px"].min()),
+            "fg_area_max_px": int(sub["gt_fg_area_px"].max()),
+            "dice_nucleus_mean": round(float(sub["dice_nucleus"].mean()), 4),
+            "dice_cytoplasm_mean": round(float(sub["dice_cytoplasm"].mean()), 4),
+            "miou_fg_mean": round(float(sub["miou_fg"].mean()), 4),
+            "miou_fg_std": round(float(sub["miou_fg"].std(ddof=1)) if len(sub) > 1 else 0.0, 4),
+            "hd95_nucleus_mean": round(float(sub["hd95_nucleus"].mean()), 2),
+            "hd95_cytoplasm_mean": round(float(sub["hd95_cytoplasm"].mean()), 2),
+        })
+    return pd.DataFrame(rows)
+
+
+def save_learning_curve_plot(curves: Dict[str, str], out_path: str, title: str = "Kurva Pelatihan & Validasi"):
+    """Plot train_loss & val_dice_fg dari berkas CSV logs/histories/."""
+    import pandas as pd
+
+    fig, axes = plt.subplots(1, 2, figsize=(11.5, 4.2))
+    for label, csv_path in curves.items():
+        if not os.path.exists(csv_path):
+            continue
+        hdf = pd.read_csv(csv_path)
+        axes[0].plot(hdf["epoch"], hdf["train_loss"], label=label, linewidth=2)
+        axes[1].plot(hdf["epoch"], hdf["val_dice_fg"], label=label, linewidth=2)
+
+    axes[0].set_title("Training Loss per Epoch")
+    axes[0].set_xlabel("Epoch")
+    axes[0].set_ylabel("Loss")
+    axes[0].grid(alpha=0.3)
+    axes[0].legend(fontsize=8)
+
+    axes[1].set_title("Validation Dice Foreground per Epoch")
+    axes[1].set_xlabel("Epoch")
+    axes[1].set_ylabel("Val Dice FG")
+    axes[1].grid(alpha=0.3)
+    axes[1].legend(fontsize=8)
+
+    fig.suptitle(title, fontsize=11, fontweight="bold")
+    os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
+    plt.tight_layout()
     plt.savefig(out_path, dpi=180, bbox_inches="tight")
     plt.close(fig)
+
+
+def save_baseline_preview_grid(
+    in_records: List[Dict],
+    cross_records: List[Dict],
+    out_path: str,
+    n_each: int = 2,
+    first_label: str = "In-Domain (D1)",
+    second_label: str = "Cross-Domain (D2)",
+):
+    """Tampilkan perbandingan visual prediksi dua kondisi evaluasi pada satu grid."""
+    in_sorted = sorted(in_records, key=lambda r: r["dice_fg_mean"])
+    cross_sorted = sorted(cross_records, key=lambda r: r["dice_fg_mean"])
+    picks = []
+    for tag, recs in [(first_label, in_sorted), (second_label, cross_sorted)]:
+        if not recs:
+            continue
+        chosen = [recs[len(recs) - 1], recs[0]] if len(recs) > 1 else [recs[0]]
+        for r in chosen[:n_each]:
+            picks.append((tag, r))
+
+    fig, axes = plt.subplots(len(picks), 3, figsize=(9.5, 2.8 * len(picks)))
+    if len(picks) == 1:
+        axes = np.expand_dims(axes, axis=0)
+
+    for row_idx, (tag, item) in enumerate(picks):
+        panels = [item["image_rgb"], item["gt_mask"], item["pred_mask"]]
+        titles = [
+            f"{tag}\nID {item['id']}",
+            "Ground Truth",
+            f"Prediksi (Dice={item['dice_fg_mean']:.3f} | mIoU={item.get('miou_fg', 0.0):.3f})",
+        ]
+        cmaps = [None, "viridis", "viridis"]
+        for c in range(3):
+            ax = axes[row_idx, c]
+            if cmaps[c]:
+                ax.imshow(panels[c], cmap=cmaps[c], vmin=0, vmax=2, interpolation="nearest")
+            else:
+                ax.imshow(panels[c])
+            ax.set_title(titles[c], fontsize=8)
+            ax.axis("off")
+
+    os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+

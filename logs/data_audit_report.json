@@ -5,6 +5,7 @@
     "D1": "splits/zheng_d1_split.csv",
     "D2": "splits/zheng_d2_split.csv"
   },
+  "per_image_audit_csv": "logs/data_audit_per_image.csv",
   "leakage_check": {
     "total_images": 400,
     "split_counts": {
@@ -20,8 +21,11 @@
       }
     },
     "cross_split_leakage_exact": 0,
+    "cross_split_leakage_exact_pairs": [],
     "cross_split_leakage_dhash_le_4bits": 0,
+    "cross_split_leakage_dhash_pairs": [],
     "cross_domain_near_duplicates_le_4bits": 0,
+    "cross_domain_near_duplicate_pairs": [],
     "within_train_exact_duplicates_grouped": [
       [
         "D1/112(train)",
@@ -32,7 +36,54 @@
   "domain_1_eda": {
     "domain": "D1",
     "count": 300,
+    "missing_masks_count": 0,
+    "corrupt_images_count": 0,
+    "image_modes": {
+      "RGB": 300
+    },
+    "file_size_kb_stats": {
+      "min": 22.74,
+      "p25": 40.83,
+      "median": 42.24,
+      "p75": 42.24,
+      "max": 42.24,
+      "mean": 41.0,
+      "std": 2.77,
+      "total_mb": 12.01
+    },
     "unique_dimensions_count": 30,
+    "dimensions_all": {
+      "120x120": 224,
+      "112x116": 12,
+      "116x120": 10,
+      "120x116": 9,
+      "116x116": 8,
+      "120x112": 4,
+      "108x112": 3,
+      "104x108": 3,
+      "112x112": 3,
+      "112x104": 2,
+      "108x104": 2,
+      "108x108": 2,
+      "104x104": 1,
+      "112x108": 1,
+      "120x108": 1,
+      "116x104": 1,
+      "104x100": 1,
+      "100x112": 1,
+      "108x100": 1,
+      "100x100": 1,
+      "112x120": 1,
+      "104x116": 1,
+      "100x104": 1,
+      "88x88": 1,
+      "104x120": 1,
+      "108x120": 1,
+      "108x116": 1,
+      "116x112": 1,
+      "100x120": 1,
+      "120x96": 1
+    },
     "dimensions_summary": {
       "120x120": 224,
       "112x116": 12,
@@ -41,8 +92,36 @@
       "116x116": 8,
       "120x112": 4,
       "108x112": 3,
-      "104x108": 3
+      "104x108": 3,
+      "112x112": 3,
+      "112x104": 2,
+      "108x104": 2,
+      "108x108": 2,
+      "104x104": 1,
+      "112x108": 1,
+      "120x108": 1,
+      "116x104": 1,
+      "104x100": 1,
+      "100x112": 1,
+      "108x100": 1,
+      "100x100": 1,
+      "112x120": 1,
+      "104x116": 1,
+      "100x104": 1,
+      "88x88": 1,
+      "104x120": 1,
+      "108x120": 1,
+      "108x116": 1,
+      "116x112": 1,
+      "100x120": 1,
+      "120x96": 1
     },
+    "raw_mask_unique_values_global": [
+      0,
+      128,
+      255
+    ],
+    "stray_files_count": 0,
     "stray_mask_pixel_files": {},
     "class_pixel_pct_mean_std": {
       "background": [
@@ -58,6 +137,102 @@
         3.97
       ]
     },
+    "class_pixel_pct_stats": {
+      "background": {
+        "min": 48.22,
+        "p25": 62.56,
+        "median": 69.22,
+        "p75": 74.44,
+        "max": 87.99,
+        "mean": 68.73,
+        "std": 8.27
+      },
+      "cytoplasm": {
+        "min": 3.18,
+        "p25": 14.82,
+        "median": 19.44,
+        "p75": 23.85,
+        "max": 35.98,
+        "mean": 18.81,
+        "std": 6.9
+      },
+      "nucleus": {
+        "min": 6.46,
+        "p25": 9.85,
+        "median": 11.57,
+        "p75": 13.66,
+        "max": 30.98,
+        "mean": 12.46,
+        "std": 3.98
+      }
+    },
+    "object_area_px_stats": {
+      "cytoplasm": {
+        "min": 458.0,
+        "p25": 2091.2,
+        "median": 2702.5,
+        "p75": 3361.2,
+        "max": 5009.0,
+        "mean": 2634.6,
+        "std": 990.8
+      },
+      "nucleus": {
+        "min": 930.0,
+        "p25": 1389.8,
+        "median": 1598.0,
+        "p75": 1918.2,
+        "max": 3443.0,
+        "mean": 1723.9,
+        "std": 483.1
+      },
+      "foreground_total": {
+        "min": 1729.0,
+        "p25": 3596.0,
+        "median": 4405.5,
+        "p75": 5166.5,
+        "max": 7183.0,
+        "mean": 4358.6,
+        "std": 1132.2
+      },
+      "nc_ratio": {
+        "min": 0.249,
+        "p25": 0.461,
+        "median": 0.595,
+        "p75": 1.059,
+        "max": 2.775,
+        "mean": 0.809,
+        "std": 0.503
+      }
+    },
+    "object_count_per_image": {
+      "cell_foreground_components": {
+        "min": 1.0,
+        "p25": 1.0,
+        "median": 1.0,
+        "p75": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "nucleus_components": {
+        "min": 1.0,
+        "p25": 1.0,
+        "median": 1.0,
+        "p75": 1.0,
+        "max": 3.0,
+        "mean": 1.25,
+        "std": 0.5
+      },
+      "cytoplasm_components": {
+        "min": 1.0,
+        "p25": 1.0,
+        "median": 1.0,
+        "p75": 1.0,
+        "max": 3.0,
+        "mean": 1.05,
+        "std": 0.23
+      }
+    },
     "rgb_channel_mean": [
       223.76,
       198.81,
@@ -67,15 +242,65 @@
       50.29,
       75.29,
       32.76
+    ],
+    "rgb_channel_median": [
+      225.31,
+      201.67,
+      151.0
+    ],
+    "rgb_channel_min": [
+      191.3,
+      156.82,
+      109.82
+    ],
+    "rgb_channel_max": [
+      241.49,
+      225.55,
+      237.95
     ]
   },
   "domain_2_eda": {
     "domain": "D2",
     "count": 100,
+    "missing_masks_count": 0,
+    "corrupt_images_count": 0,
+    "image_modes": {
+      "RGB": 100
+    },
+    "file_size_kb_stats": {
+      "min": 263.72,
+      "p25": 263.72,
+      "median": 263.72,
+      "p75": 263.72,
+      "max": 263.72,
+      "mean": 263.72,
+      "std": 0.0,
+      "total_mb": 25.75
+    },
     "unique_dimensions_count": 1,
+    "dimensions_all": {
+      "300x300": 100
+    },
     "dimensions_summary": {
       "300x300": 100
     },
+    "raw_mask_unique_values_global": [
+      0,
+      2,
+      3,
+      7,
+      9,
+      24,
+      25,
+      37,
+      42,
+      44,
+      45,
+      50,
+      128,
+      255
+    ],
+    "stray_files_count": 5,
     "stray_mask_pixel_files": {
       "034.png": {
         "2": 2,
@@ -114,6 +339,102 @@
         3.77
       ]
     },
+    "class_pixel_pct_stats": {
+      "background": {
+        "min": 50.96,
+        "p25": 71.84,
+        "median": 78.74,
+        "p75": 83.07,
+        "max": 91.61,
+        "mean": 77.24,
+        "std": 8.28
+      },
+      "cytoplasm": {
+        "min": 1.82,
+        "p25": 7.92,
+        "median": 11.69,
+        "p75": 17.2,
+        "max": 27.04,
+        "mean": 12.65,
+        "std": 6.37
+      },
+      "nucleus": {
+        "min": 2.76,
+        "p25": 7.29,
+        "median": 10.22,
+        "p75": 12.29,
+        "max": 24.13,
+        "mean": 10.1,
+        "std": 3.79
+      }
+    },
+    "object_area_px_stats": {
+      "cytoplasm": {
+        "min": 1634.0,
+        "p25": 7129.2,
+        "median": 10518.0,
+        "p75": 15479.2,
+        "max": 24336.0,
+        "mean": 11386.6,
+        "std": 5735.7
+      },
+      "nucleus": {
+        "min": 2486.0,
+        "p25": 6561.8,
+        "median": 9200.0,
+        "p75": 11058.0,
+        "max": 21720.0,
+        "mean": 9093.7,
+        "std": 3411.7
+      },
+      "foreground_total": {
+        "min": 7548.0,
+        "p25": 15239.8,
+        "median": 19136.5,
+        "p75": 25344.2,
+        "max": 44137.0,
+        "mean": 20480.3,
+        "std": 7449.4
+      },
+      "nc_ratio": {
+        "min": 0.258,
+        "p25": 0.544,
+        "median": 0.746,
+        "p75": 1.256,
+        "max": 6.718,
+        "mean": 1.063,
+        "std": 0.866
+      }
+    },
+    "object_count_per_image": {
+      "cell_foreground_components": {
+        "min": 1.0,
+        "p25": 1.0,
+        "median": 1.0,
+        "p75": 1.0,
+        "max": 1.0,
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "nucleus_components": {
+        "min": 1.0,
+        "p25": 1.0,
+        "median": 1.0,
+        "p75": 1.0,
+        "max": 3.0,
+        "mean": 1.11,
+        "std": 0.35
+      },
+      "cytoplasm_components": {
+        "min": 1.0,
+        "p25": 1.0,
+        "median": 1.0,
+        "p75": 1.0,
+        "max": 23.0,
+        "mean": 2.12,
+        "std": 3.4
+      }
+    },
     "rgb_channel_mean": [
       210.52,
       171.04,
@@ -123,6 +444,21 @@
       45.22,
       55.31,
       23.19
+    ],
+    "rgb_channel_median": [
+      208.56,
+      168.28,
+      172.61
+    ],
+    "rgb_channel_min": [
+      184.69,
+      142.84,
+      157.34
+    ],
+    "rgb_channel_max": [
+      241.64,
+      213.48,
+      196.3
     ]
   }
 }
