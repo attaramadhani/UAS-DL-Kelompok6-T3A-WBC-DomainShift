@@ -128,6 +128,7 @@ Seluruh **59 run GPU (`Tesla T4`)** selesai dengan status **100% sukses (`59/59`
 | `D2 -> D1` | `U-Net` | `NoAdapt` | `0.8863 ± 0.0005` | `0.2474 ± 0.0210` | `0.4297 ± 0.0293` | `0.1647 ± 0.0161` | `108.55 / 143.68` | `0.6389` |
 
 * **Uji Statistik Berpasangan ([`logs/m3_statistical_tests.csv`](logs/m3_statistical_tests.csv)):** Pada semua `24` kondisi berpasangan, `DeepLabV3+` mengungguli `U-Net` (`cross mIoU = 0.5586` vs `0.5236`, selisih `+0.0350`, `t = 2.1610`, `p = 0.04135`). Pada arah tersulit **`D2 -> D1`** (latih terbatas dari `70` citra seragam CellaVision), ketiga adaptasi memberikan peningkatan sangat signifikan secara statistik terhadap `NoAdapt`: `DeepLabV3+ + ColorJitter` (`+0.4438`, `p = 0.00196`), `Reinhard` (`+0.4353`, `p = 0.00092`), `Macenko` (`+0.3368`, `p = 0.00945`), dan pada `U-Net`: `ColorJitter` (`+0.3215`, `p = 0.00209`), `Macenko` (`+0.3193`, `p = 0.02531`), `Reinhard` (`+0.3007`, `p = 0.01552`).
+* **Uji Wilcoxon & 95% Bootstrap CI Per Citra — `DeepLabV3+` (`seed=42`, `ColorJitter` vs `NoAdapt`, [`logs/m3_deeplab_per_image_ci.csv`](logs/m3_deeplab_per_image_ci.csv)):** Pada arah `D1 -> D2` (`n=15`), **`14/15` citra** membaik dengan selisih rerata mIoU `+0.0626` (`95% CI [0.0177, 0.1121]`, `Wilcoxon p = 0.00427`); pada arah `D2 -> D1` (`n=45`), seluruh **`45/45` citra** membaik dengan selisih rerata mIoU `+0.4711` (`95% CI [0.4144, 0.5260]`, `Wilcoxon p = 5.68e-14`).
 
 ### B. Ringkasan 4 Studi Ablasi & Efisiensi Model (`seed=42`, `D1 -> D2`)
 
@@ -195,6 +196,7 @@ Seluruh **59 run GPU (`Tesla T4`)** selesai dengan status **100% sukses (`59/59`
 │   ├── m3_experiment_runs.csv                # Log lengkap seluruh 59 run M3 (48 utama + 11 ablasi)
 │   ├── m3_main_summary.csv                   # Agregasi 3-seed (mean±std) 16 kondisi utama
 │   ├── m3_statistical_tests.csv              # Uji t-berpasangan & Wilcoxon (strategi & paradigma)
+│   ├── m3_deeplab_per_image_ci.csv           # Uji Wilcoxon & 95% bootstrap CI per citra (DeepLabV3+ s42)
 │   ├── m3_ablation_summary.csv               # Rekap 4 studi ablasi satu-faktor anggota tim
 │   ├── m3_efficiency_summary.csv             # Benchmark parameter, latency (ms) & FPS GPU Tesla T4
 │   ├── m3_error_analysis_summary.csv         # Frekuensi kategori kesalahan NoAdapt vs ColorJitter
