@@ -23,7 +23,7 @@
 | **M3** | Laporan Akhir (Artikel SINTA 2) | [`Laporan_Akhir_M3_Kelompok6_T3A.pdf`](docs/Laporan_Akhir_M3_Kelompok6_T3A.pdf) / [`.docx`](docs/Laporan_Akhir_M3_Kelompok6_T3A.docx) | 8 hal 2-kolom IMRaD, abstrak EN <= 200 kata & 9 sitasi |
 | **M3** | Model Card Klinis | [`Model_Card_M3_Kelompok6_T3A.pdf`](docs/Model_Card_M3_Kelompok6_T3A.pdf) / [`.docx`](docs/Model_Card_M3_Kelompok6_T3A.docx) | 1 hal: metrik, latensi T4, batasan XAI & kondisi *Do-Not-Use* |
 | **M3** | Lembar Kontribusi | [`Lembar_Kontribusi_M3_Kelompok6_T3A.pdf`](docs/Lembar_Kontribusi_M3_Kelompok6_T3A.pdf) / [`.docx`](docs/Lembar_Kontribusi_M3_Kelompok6_T3A.docx) | 1 hal: peran, ablasi 4 anggota, integritas & blok TTD |
-| **M3** | Slide Presentasi Final | [`Slide_Presentasi_M3_Kelompok6_T3A.pdf`](docs/Slide_Presentasi_M3_Kelompok6_T3A.pdf) / [`.pptx`](docs/Slide_Presentasi_M3_Kelompok6_T3A.pptx) | 14 slide 16:9 termasuk *"Apa yang Tidak Berhasil"* & Grad-CAM |
+| **M3** | Slide Presentasi Utama (UAS) | [`Presentasi_UAS_DL_Kelompok6_T3A.pdf`](docs/Presentasi_UAS_DL_Kelompok6_T3A.pdf) / [`.pptx`](docs/Presentasi_UAS_DL_Kelompok6_T3A.pptx) | 15 slide 16:9 (pembicara tim, *"Apa yang tidak berhasil"*, Grad-CAM & Wilcoxon CI) |
 | **M3** | Laporan Uji Wilcoxon & CI | [`Laporan_Uji_Wilcoxon_CI_Per_Citra_Kelompok6_T3A.pdf`](docs/Laporan_Uji_Wilcoxon_CI_Per_Citra_Kelompok6_T3A.pdf) / [`.docx`](docs/Laporan_Uji_Wilcoxon_CI_Per_Citra_Kelompok6_T3A.docx) | 1 hal: uji per citra `DeepLabV3+` s42 (`10.000` bootstrap CI) |
 | **Bobot** | Arsip Checkpoint `.pth` Colab | [Google Drive M2 & M3 Bundle](https://drive.google.com/drive/folders/101PbkgjCD-y_OaZPzRcqZzdgjoCf2ld8?usp=sharing) | 27 checkpoint beku (M3) + log/grafik lengkap di Drive |
 
@@ -186,7 +186,8 @@ Seluruh **59 run GPU (`Tesla T4`)** selesai dengan status **100% sukses (`59/59`
 │   ├── Laporan_Akhir_M3_Kelompok6_T3A.docx/.pdf     # Artikel akhir SINTA 2 Milestone M3 (8 halaman)
 │   ├── Model_Card_M3_Kelompok6_T3A.docx/.pdf        # Model Card ringkas (1 halaman)
 │   ├── Lembar_Kontribusi_M3_Kelompok6_T3A.docx/.pdf # Lembar kontribusi, ablasi & TTD 4 anggota (1 halaman)
-│   ├── Slide_Presentasi_M3_Kelompok6_T3A.pptx/.pdf  # Deck presentasi final 14 slide 16:9
+│   ├── Presentasi_UAS_DL_Kelompok6_T3A.pptx/.pdf    # Deck presentasi utama UAS (15 slide 16:9 + pembagian pembicara)
+│   ├── Slide_Presentasi_M3_Kelompok6_T3A.pptx/.pdf  # Deck presentasi versi ringkas (14 slide)
 │   ├── Laporan_Uji_Wilcoxon_CI_Per_Citra_Kelompok6_T3A.docx/.pdf # Laporan ringkas uji Wilcoxon & CI per citra (1 halaman)
 │   └── figures/                                     # Visualisasi EDA (M2), error gallery, kurva & Grad-CAM (M3)
 ├── logs/
